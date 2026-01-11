@@ -1,19 +1,15 @@
-# NEON FINANCE：个人财务可视化仪表盘（GitHub Pages 单页）
+# NEON FINANCE：个人财务可视化仪表盘（GitHub Pages）
 
 一个部署在 GitHub Pages 的纯静态单页小工具，用两条横向霓虹进度条直观展示：
 
 - **本月剩余天数**（自动计算）
 - **本月预算剩余比例**（手动输入 + localStorage 持久化）
 
-界面采用暗色赛博/霓虹风格（glassmorphism + neon glow），适合做个人主页上的轻量小组件，或作为前端练手项目。
-
 ---
 
 ## 在线预览（Live Demo）
 
 - GitHub Pages：`https://roy-buxunchang.github.io/finance-neon-dashboard/`
-
-> 提示：将上面的占位符替换为你的实际地址。
 
 ---
 
