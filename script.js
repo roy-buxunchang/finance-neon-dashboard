@@ -60,38 +60,117 @@ function makeNeonGradient(ctx, area, leftColor, rightColor) {
 function createProgressChart(canvas, theme) {
   const ctx = canvas.getContext("2d");
 
-  // 自定义插件：在图中央写字（百分比 + 文案）
-  const centerTextPlugin = {
-    id: "centerTextPlugin",
-    afterDatasetsDraw(chart, args, pluginOptions) {
-      const { ctx, chartArea } = chart;
-      const text1 = pluginOptions?.text1 ?? "";
-      const text2 = pluginOptions?.text2 ?? "";
-      const glow = pluginOptions?.glow ?? "rgba(35,247,255,0.22)";
+// 自定义插件：高对比 HUD 文本（默认画在 bar 上方，不重叠，更色盲友好）
+const centerTextPlugin = {
+  id: "centerTextPlugin",
+  afterDatasetsDraw(chart, args, pluginOptions) {
+    const { ctx, chartArea } = chart;
+    const text1 = pluginOptions?.text1 ?? "";
+    const text2 = pluginOptions?.text2 ?? "";
+    const glow  = pluginOptions?.glow  ?? "rgba(35,247,255,0.22)";
 
-      ctx.save();
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+    // mode: "above"（推荐：不重叠） 或 "inside"（仍在条内，但带强对比底）
+    const mode = pluginOptions?.mode ?? "above";
 
-      const cx = (chartArea.left + chartArea.right) / 2;
-      const cy = (chartArea.top + chartArea.bottom) / 2;
+    if (!text1 && !text2) return;
 
-      // 发光效果
-      ctx.shadowColor = glow;
-      ctx.shadowBlur = 18;
+    // 取第一个 dataset 的 bar 元素，拿到 y 和高度，用来定位“条在哪里”
+    const meta = chart.getDatasetMeta(0);
+    const el = meta?.data?.[0];
+    if (!el) return;
 
-      ctx.fillStyle = "rgba(245,250,255,0.92)";
-      ctx.font = "700 16px Orbitron, Inter, sans-serif";
-      ctx.fillText(text1, cx, cy - 10);
+    const barY = el.y;
+    const barH = el.height ?? 26;
 
-      ctx.shadowBlur = 10;
-      ctx.fillStyle = "rgba(245,250,255,0.70)";
-      ctx.font = "600 12px Inter, sans-serif";
-      ctx.fillText(text2, cx, cy + 12);
+    // 字体与布局参数
+    const line1 = 16;      // text1 视觉字号
+    const line2 = 12;      // text2 视觉字号
+    const gap   = 6;
+    const padX  = 12;
+    const padY  = 10;
 
-      ctx.restore();
+    const font1 = `700 ${line1}px Orbitron, Inter, sans-serif`;
+    const font2 = `600 ${line2}px Inter, sans-serif`;
+
+    // 计算文本宽度，确定“HUD 标签”宽高
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.font = font1;
+    const w1 = ctx.measureText(text1).width;
+    ctx.font = font2;
+    const w2 = ctx.measureText(text2).width;
+
+    const boxW = Math.ceil(Math.max(w1, w2) + padX * 2);
+    const boxH = Math.ceil(padY * 2 + line1 + gap + line2);
+
+    // 目标位置：默认放在 bar 上方，避免重叠
+    const cx = (chartArea.left + chartArea.right) / 2;
+
+    let x = cx - boxW / 2;
+    x = Math.max(chartArea.left + 6, Math.min(x, chartArea.right - boxW - 6));
+
+    let y;
+    if (mode === "inside") {
+      // 仍在 bar 内：靠近 bar 中心
+      y = barY - boxH / 2;
+    } else {
+      // 推荐：bar 上方
+      y = barY - barH / 2 - boxH - 10;
+      // 如果空间太小，就贴到 chartArea 顶部一点点（仍不会盖住 bar）
+      y = Math.max(chartArea.top + 6, y);
     }
-  };
+
+    // 画圆角矩形 HUD
+    const r = 12;
+    const drawRoundRect = (rx, ry, rw, rh, rr) => {
+      ctx.beginPath();
+      ctx.moveTo(rx + rr, ry);
+      ctx.arcTo(rx + rw, ry, rx + rw, ry + rh, rr);
+      ctx.arcTo(rx + rw, ry + rh, rx, ry + rh, rr);
+      ctx.arcTo(rx, ry + rh, rx, ry, rr);
+      ctx.arcTo(rx, ry, rx + rw, ry, rr);
+      ctx.closePath();
+    };
+
+    // HUD 背景（深色，提高对比度）
+    drawRoundRect(x, y, boxW, boxH, r);
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    ctx.fill();
+
+    // HUD 描边（霓虹）
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = glow;
+    ctx.shadowColor = glow;
+    ctx.shadowBlur = 18;
+    ctx.stroke();
+
+    // 文本：强对比“黑描边 + 白填充”（色盲/低对比屏幕更稳）
+    const t1y = y + padY + line1 / 2;
+    const t2y = y + padY + line1 + gap + line2 / 2;
+
+    // text1
+    ctx.shadowBlur = 0;
+    ctx.font = font1;
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "rgba(0,0,0,0.85)";
+    ctx.strokeText(text1, x + boxW / 2, t1y);
+    ctx.fillStyle = "rgba(255,255,255,0.96)";
+    ctx.fillText(text1, x + boxW / 2, t1y);
+
+    // text2
+    ctx.font = font2;
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgba(0,0,0,0.80)";
+    ctx.strokeText(text2, x + boxW / 2, t2y);
+    ctx.fillStyle = "rgba(255,255,255,0.78)";
+    ctx.fillText(text2, x + boxW / 2, t2y);
+
+    ctx.restore();
+  }
+};
+
 
   const data = {
     labels: ["progress"],
