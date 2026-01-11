@@ -337,3 +337,55 @@ input[type="number"]::-webkit-inner-spin-button{
   color: rgba(245,250,255,0.58);
   line-height: 1.6;
 }
+
+/* ===== HUD：完全脱离 bar 的数值展示（色盲/低对比更友好） ===== */
+.hud{
+  width: fit-content;
+  margin: 8px auto 10px;           /* 居中 + 与 bar 拉开距离 */
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+  backdrop-filter: blur(8px);
+  text-align: center;
+}
+
+.hud-main{
+  font-family: "Orbitron", "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  color: rgba(255,255,255,0.96);
+
+  /* 黑色描边：确保任何背景/任何渐变下都清晰 */
+  -webkit-text-stroke: 1px rgba(0,0,0,0.75);
+  text-shadow:
+    0 2px 0 rgba(0,0,0,0.55),
+    0 0 18px rgba(255,255,255,0.10);
+}
+
+.hud-sub{
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.78);
+  text-shadow: 0 2px 0 rgba(0,0,0,0.45);
+}
+
+/* 不同条的霓虹描边颜色（与 bar 的主题一致，但不依赖颜色阅读文字） */
+.hud-cyan{
+  border-color: rgba(35,247,255,0.28);
+  box-shadow:
+    0 0 0 1px rgba(35,247,255,0.10) inset,
+    0 0 22px rgba(35,247,255,0.10);
+}
+
+.hud-green{
+  border-color: rgba(53,255,154,0.26);
+  box-shadow:
+    0 0 0 1px rgba(53,255,154,0.10) inset,
+    0 0 22px rgba(53,255,154,0.10);
+}
+

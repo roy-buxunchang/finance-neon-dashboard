@@ -179,7 +179,8 @@ const centerTextPlugin = {
       {
         label: "剩余",
         data: [50],
-        borderWidth: 0,
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.28)",
         borderRadius: 999,
         barThickness: 26,
         backgroundColor: (context) => {
@@ -193,7 +194,8 @@ const centerTextPlugin = {
       {
         label: "已用",
         data: [50],
-        borderWidth: 0,
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.10)",
         borderRadius: 999,
         barThickness: 26,
         backgroundColor: theme.track
@@ -204,7 +206,7 @@ const centerTextPlugin = {
   const chart = new Chart(ctx, {
     type: "bar",
     data,
-    plugins: [centerTextPlugin],
+    plugins: [],
     options: {
       indexAxis: "y",
       responsive: true,
@@ -244,18 +246,16 @@ const centerTextPlugin = {
 }
 
 /* ====== 更新图表数据（把“剩余/已用”拼成 100%）====== */
-function setChartPercent(chart, remainingPercent, text1, text2) {
+function setChartPercent(chart, remainingPercent) {
   const r = clamp(remainingPercent, 0, 100);
   const used = 100 - r;
 
   chart.data.datasets[0].data = [r];
   chart.data.datasets[1].data = [used];
 
-  chart.options.plugins.centerTextPlugin.text1 = text1;
-  chart.options.plugins.centerTextPlugin.text2 = text2;
-
   chart.update();
 }
+
 
 /* ====== 页面逻辑 ====== */
 document.addEventListener("DOMContentLoaded", () => {
@@ -268,6 +268,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveBtn = document.getElementById("saveBtn");
   const resetBtn = document.getElementById("resetBtn");
   const statusText = document.getElementById("statusText");
+
+  const daysHudMain = document.getElementById("daysHudMain");
+  const daysHudSub  = document.getElementById("daysHudSub");
+  const budgetHudMain = document.getElementById("budgetHudMain");
+  const budgetHudSub  = document.getElementById("budgetHudSub");
 
   // 读取预算（localStorage）
   const budget = loadBudget();
@@ -308,34 +313,40 @@ document.addEventListener("DOMContentLoaded", () => {
     const info = getMonthInfo(new Date());
     const pct = clamp(info.remainingPct, 0, 100);
 
-    const text1 = `${pct.toFixed(1)}%`;
-    const text2 = `剩余 ${info.remainingDays} / ${info.daysInMonth} 天`;
+    // 更新 bar
+    setChartPercent(daysChart, pct);
 
-    setChartPercent(daysChart, pct, text1, text2);
+    // 更新 HUD（完全脱离 bar）
+    daysHudMain.textContent = `${pct.toFixed(1)}%`;
+    daysHudSub.textContent  = `剩余 ${info.remainingDays} / ${info.daysInMonth} 天`;
 
+    // 其他原有 UI（你已有的）
     daysChip.textContent = `${info.remainingDays}天`;
     daysHint.textContent =
       `说明：今天是 ${info.month + 1} 月 ${info.day} 日，本月共 ${info.daysInMonth} 天；默认“剩余天数”包含今天。`;
   }
+
 
   // 更新“预算剩余”
   function refreshBudget() {
     const total = toNumber(totalInput.value, 0);
     const remain = toNumber(remainInput.value, 0);
 
-    // 防止除以 0
     const pct = total > 0 ? (remain / total) * 100 : 0;
     const safePct = clamp(pct, 0, 100);
 
-    const text1 = `${safePct.toFixed(1)}%`;
-    const text2 = total > 0
+    // 更新 bar
+    setChartPercent(budgetChart, safePct);
+
+    // 更新 HUD（完全脱离 bar）
+    budgetHudMain.textContent = `${safePct.toFixed(1)}%`;
+    budgetHudSub.textContent = total > 0
       ? `剩余 ¥${remain.toFixed(2)} / ¥${total.toFixed(2)}`
       : "请先填写本月总预算";
 
-    setChartPercent(budgetChart, safePct, text1, text2);
-
     budgetChip.textContent = total > 0 ? `¥${remain.toFixed(0)}` : "--";
   }
+
 
   // 初次刷新
   refreshDays();
