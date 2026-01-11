@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>个人财务霓虹仪表盘</title>
+
+  <!-- 字体（可选，但更有“未来感”） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css" />
+
+  <!-- Chart.js（latest） -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-scanline"></div>
+
+  <main class="container">
+    <header class="hero">
+      <div class="badge">NEON FINANCE</div>
+      <h1 class="title">个人财务可视化仪表盘</h1>
+      <p class="subtitle">
+        两条横向霓虹进度条：本月剩余天数（自动）与月度预算剩余（手动 + localStorage 持久化）
+      </p>
+    </header>
+
+    <section class="grid">
+      <!-- 卡片 1：本月剩余天数 -->
+      <article class="card">
+        <div class="card-head">
+          <h2>本月剩余天数</h2>
+          <span class="chip" id="daysChip">--</span>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas id="daysChart" height="120"></canvas>
+        </div>
+
+        <p class="hint" id="daysHint">
+          说明：默认“剩余天数”包含今天（例如今天是 11 号，则剩余天数 = 本月总天数 - 11 + 1）。
+        </p>
+      </article>
+
+      <!-- 卡片 2：月度预算剩余 -->
+      <article class="card">
+        <div class="card-head">
+          <h2>月度预算剩余</h2>
+          <span class="chip" id="budgetChip">--</span>
+        </div>
+
+        <div class="form">
+          <label class="field">
+            <span class="label">本月总预算</span>
+            <div class="input-wrap">
+              <input id="totalBudget" type="number" min="0" step="0.01" placeholder="例如 10000" />
+              <span class="unit">¥</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span class="label">当前剩余预算</span>
+            <div class="input-wrap">
+              <input id="remainingBudget" type="number" min="0" step="0.01" placeholder="例如 6000" />
+              <span class="unit">¥</span>
+            </div>
+          </label>
+
+          <div class="actions">
+            <button class="btn primary" id="saveBtn" type="button">保存到 localStorage</button>
+            <button class="btn ghost" id="resetBtn" type="button">清空并重置</button>
+          </div>
+
+          <div class="status" id="statusText">提示：修改数字后会自动更新图表；点击“保存”会永久记住。</div>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas id="budgetChart" height="120"></canvas>
+        </div>
+
+        <p class="hint">
+          localStorage 会保存在你的浏览器里：同一台设备、同一浏览器、同一域名下刷新仍会保留。
+        </p>
+      </article>
+    </section>
+
+    <footer class="footer">
+      <span>部署在 GitHub Pages 的纯静态单页工具（HTML + CSS + JavaScript + Chart.js）</span>
+    </footer>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
