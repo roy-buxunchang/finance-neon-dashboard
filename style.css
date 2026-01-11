@@ -10,7 +10,6 @@
   --neonA: #23f7ff;
   --neonB: #a855ff;
   --neonC: #35ff9a;
-  --warn: #ff4dd8;
 }
 
 *{ box-sizing:border-box; }
@@ -27,6 +26,7 @@ body{
   overflow-x:hidden;
 }
 
+/* 背景网格 */
 .bg-grid{
   position:fixed; inset:0;
   pointer-events:none;
@@ -38,6 +38,7 @@ body{
   mask-image: radial-gradient(circle at 50% 20%, rgba(0,0,0,1), rgba(0,0,0,0.1) 65%, transparent 80%);
 }
 
+/* 扫描线 */
 .bg-scanline{
   position:fixed; inset:-20% 0 0 0;
   pointer-events:none;
@@ -52,22 +53,21 @@ body{
   transform: translateY(-20%);
   animation: scan 9s linear infinite;
 }
-
 @keyframes scan{
   0%{ transform: translateY(-20%); }
   100%{ transform: translateY(20%); }
 }
 
 .container{
-  width:min(1100px, 92vw);
-  margin: 32px auto 40px;
+  width:min(1160px, 92vw);
+  margin: 32px auto 44px;
 }
 
+/* 顶部标题区 */
 .hero{
-  padding: 18px 16px 6px;
+  padding: 18px 16px 10px;
   margin-bottom: 18px;
 }
-
 .badge{
   display:inline-block;
   font-family:"Orbitron", sans-serif;
@@ -80,7 +80,6 @@ body{
   background: rgba(0,0,0,0.25);
   box-shadow: 0 0 18px rgba(35,247,255,0.18);
 }
-
 .title{
   margin: 12px 0 6px;
   font-family:"Orbitron", sans-serif;
@@ -88,24 +87,27 @@ body{
   letter-spacing:0.03em;
   text-shadow: 0 0 18px rgba(35,247,255,0.18);
 }
-
 .subtitle{
   margin: 0;
   color: var(--muted);
   line-height: 1.65;
-  max-width: 72ch;
+  max-width: 78ch;
 }
 
+/* 新布局：左大右小；移动端自动单列 */
 .grid{
   display:grid;
   grid-template-columns: 1fr;
   gap: 16px;
 }
-
-@media (min-width: 900px){
-  .grid{ grid-template-columns: 1fr 1fr; }
+@media (min-width: 980px){
+  .grid{
+    grid-template-columns: 1.35fr 0.65fr;
+    align-items: start;
+  }
 }
 
+/* 卡片样式 */
 .card{
   position:relative;
   padding: 16px 16px 14px;
@@ -120,7 +122,6 @@ body{
   transform: translateY(0);
   transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
-
 .card:hover{
   transform: translateY(-2px);
   border-color: rgba(35,247,255,0.28);
@@ -128,7 +129,6 @@ body{
     0 0 0 1px rgba(35,247,255,0.12) inset,
     0 24px 52px rgba(0,0,0,0.42);
 }
-
 .card::before{
   content:"";
   position:absolute; inset:-2px;
@@ -137,7 +137,6 @@ body{
   opacity:0.85;
   pointer-events:none;
 }
-
 .card > *{ position:relative; }
 
 .card-head{
@@ -147,13 +146,13 @@ body{
   gap:10px;
   margin-bottom: 10px;
 }
-
 .card h2{
   margin:0;
   font-size: 16px;
   letter-spacing:0.02em;
 }
 
+/* chip */
 .chip{
   font-family:"Orbitron", sans-serif;
   font-size:12px;
@@ -164,35 +163,79 @@ body{
   box-shadow: 0 0 16px rgba(35,247,255,0.14);
   color: rgba(245,250,255,0.88);
 }
+.chip.subtle{
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: none;
+  color: rgba(245,250,255,0.65);
+}
 
+/* 对比卡片内部结构 */
+.compare{
+  display:grid;
+  gap: 12px;
+}
+.compare-block{
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.compare-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.compare-title .kicker{
+  display:block;
+  font-size: 11px;
+  letter-spacing: .08em;
+  color: rgba(245,250,255,0.55);
+  margin-bottom: 4px;
+}
+.compare-title h3{
+  margin:0;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+/* 图表容器 */
 .chart-wrap{
   padding: 10px 10px 6px;
   border-radius: 14px;
   background: rgba(0,0,0,0.20);
   border: 1px solid rgba(255,255,255,0.06);
 }
-
+.chart-wrap.compact{
+  padding: 10px;
+}
 canvas{
   width:100% !important;
   filter: drop-shadow(0 0 12px rgba(35,247,255,0.25));
 }
 
+.hint{
+  margin: 10px 2px 0;
+  font-size: 12px;
+  color: rgba(245,250,255,0.55);
+  line-height: 1.55;
+}
+
+/* 表单区 */
 .form{
   display:grid;
   gap: 12px;
   margin: 6px 0 12px;
 }
-
 .field{
   display:grid;
   gap: 6px;
 }
-
 .label{
   font-size: 13px;
   color: var(--muted);
 }
-
 .input-wrap{
   display:flex;
   align-items:center;
@@ -203,7 +246,6 @@ canvas{
   border: 1px solid rgba(135,255,255,0.16);
   box-shadow: 0 0 0 1px rgba(168,85,255,0.08) inset;
 }
-
 input{
   width: 100%;
   border: none;
@@ -212,23 +254,31 @@ input{
   color: var(--text);
   font-size: 15px;
 }
-
 input::placeholder{
   color: rgba(245,250,255,0.35);
 }
-
 .unit{
   font-family:"Orbitron", sans-serif;
   font-size: 12px;
   color: rgba(245,250,255,0.72);
 }
 
+/* 关键：隐藏 number 输入框右侧箭头（spinner） */
+input[type="number"]{
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 按钮 */
 .actions{
   display:flex;
   gap: 10px;
   flex-wrap: wrap;
 }
-
 .btn{
   cursor:pointer;
   border:none;
@@ -239,7 +289,6 @@ input::placeholder{
   transition: transform .12s ease, box-shadow .18s ease, filter .18s ease;
   user-select:none;
 }
-
 .btn:active{ transform: scale(0.98); }
 
 .primary{
@@ -247,7 +296,6 @@ input::placeholder{
   background: linear-gradient(90deg, rgba(35,247,255,0.95), rgba(168,85,255,0.92));
   box-shadow: 0 0 18px rgba(35,247,255,0.18);
 }
-
 .primary:hover{
   filter: brightness(1.05);
   box-shadow: 0 0 26px rgba(35,247,255,0.22);
@@ -258,7 +306,6 @@ input::placeholder{
   background: rgba(0,0,0,0.22);
   border: 1px solid rgba(255,255,255,0.10);
 }
-
 .ghost:hover{
   border-color: rgba(53,255,154,0.24);
   box-shadow: 0 0 18px rgba(53,255,154,0.12);
@@ -270,17 +317,23 @@ input::placeholder{
   line-height: 1.5;
 }
 
-.hint{
-  margin: 10px 2px 0;
-  font-size: 12px;
-  color: rgba(245,250,255,0.55);
-  line-height: 1.55;
+/* 右侧补充说明块 */
+.mini-note{
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.06);
 }
-
-.footer{
-  margin-top: 18px;
-  padding: 10px 14px;
-  color: rgba(245,250,255,0.55);
+.mini-note-title{
+  font-family:"Orbitron", sans-serif;
   font-size: 12px;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  letter-spacing: .06em;
+  color: rgba(245,250,255,0.78);
+  margin-bottom: 6px;
+}
+.mini-note-body{
+  font-size: 12px;
+  color: rgba(245,250,255,0.58);
+  line-height: 1.6;
 }
